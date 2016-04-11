@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html>
+<head>
+<script>
+
+function decode(arrayBuffer, audioBuffer, callback)
+{
+    if (window.Worker) {
+        var left  = audioBuffer.getChannelData(0);
+        var right = audioBuffer.numberOfChannels > 1 ? audioBuffer.getChannelData(1) : null;
+
+        var offset = 0;
+        var w = new Worker("mp3worker.js");
+
+        w.onmessage = function(e) {
+            var data = e.data;
+            var type = data.type;
+
+            if (type == "error") {
+                callback(new Error("Couldn't decode"));
+
+            } else if (type == "frame") {
+                try {
+                    if (left)  left.set( data.left,  offset / 4);
+                    if (right) right.set(data.right, offset / 4);
+
+                    offset += data.sampleCount;
+                } catch (e) {
+                    callback(new Error("Error filling AudioBuffer"));
+                }
+
+            } else if (type == "done") {
+                callback(null);
+            }
+        };
+
+        w.postMessage(arrayBuffer);
+
+    } else {
+        callback(new Error("Web Workers are not available."));
+    }
+}
+
+
+function handleLoad()
+{
+    var context = window.webkitAudioContext ? new webkitAudioContext() : new AudioContext();
+
+    var request = new XMLHttpRequest();
+    request.responseType = "arraybuffer";
+    request.open("GET", "test.mp3", true);
+
+    request.addEventListener("load", function(e) {
+        // audioBuffer needs to be large enough
+        var audioBuffer = context.createBuffer(2, 1024 * 1024, 44100);
+
+        decode(request.response, audioBuffer, function(err) {
+            if (!err) {
+                var source = context.createBufferSource();
+                source.buffer = audioBuffer;
+                source.connect(context.destination);
+                source.start();
+            }
+        });
+    }, false);
+
+    request.send(null);
+}
+
+</script>
+</head>
+<body onload="handleLoad()">
+
+</body>
+</html>
