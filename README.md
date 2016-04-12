@@ -20,7 +20,7 @@ The `source` directory contains the source code at various stages of minificatio
   1. We tweaked `minimp3.c` a bit to make it easier to call from JavaScript
   2. Emscripten turned `minimp3.c` into `0.js`
   3. We chainsawed `0.js` to remove unused functions and saved it as `1.js`
-  4. `1.js` was ran through `jsmin` to get the final `mp3worker.js` file
+  4. `1.js` was run through `jsmin` to get the final `mp3worker.js` file
 
 ## Usage
 
