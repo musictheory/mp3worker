@@ -28,6 +28,8 @@ See example in index.html.
 
 ## License
 
+`mp3worker.js` and all files in `source` are released under the LGPL 2.1:
+
 ```
 /*
  * mp3worker
@@ -58,3 +60,4 @@ See example in index.html.
  */
  ```
  
+The example code in `index.html` is [dedicated to the public domain](https://creativecommons.org/publicdomain/zero/1.0/).

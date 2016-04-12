@@ -2,6 +2,7 @@
  * MPEG Audio Layer III decoder
  * Copyright (c) 2001, 2002 Fabrice Bellard,
  *           (c) 2007 Martin J. Fiedler
+ *           (c) 2016 musictheory.net, LLC
  *
  * This file is a stripped-down version of the MPEG Audio decoder from
  * the FFmpeg libavcodec library.
