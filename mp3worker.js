@@ -1,4 +1,30 @@
-
+/*
+ * mp3worker
+ * (based on minimp3, which is based on FFmpeg)
+ *
+ * https://github.com/musictheory/mp3worker/
+ *
+ * Copyright (c) 2001, 2002 Fabrice Bellard (FFmpeg)
+ *           (c) 2007 Martin J. Fiedler (minimp3)
+ *           (c) 2016 musictheory.net, LLC
+ *
+ * This file is based on a stripped-down version of the MPEG Audio
+ * decoder from the FFmpeg libavcodec library.
+ *
+ * mp3worker is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 2.1 of the License, or (at your option) any later version.
+ *
+ * mp3worker are distributed in the hope that they will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with FFmpeg; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
+ */
 (function(root){var Module={};var Runtime={STACK_ALIGN:16,stackAlloc:(function(size){var ret=STACKTOP;STACKTOP=STACKTOP+size|0;STACKTOP=STACKTOP+15&-16;return ret;}),staticAlloc:(function(size){var ret=STATICTOP;STATICTOP=STATICTOP+size|0;STATICTOP=STATICTOP+15&-16;return ret;}),dynamicAlloc:(function(size){var ret=DYNAMICTOP;DYNAMICTOP=DYNAMICTOP+size|0;DYNAMICTOP=DYNAMICTOP+15&-16;if(DYNAMICTOP>=TOTAL_MEMORY){var success=enlargeMemory();if(!success){DYNAMICTOP=ret;return 0;}}
 return ret;}),alignMemory:(function(size,quantum){var ret=size=Math.ceil(size/(quantum?quantum:16))*(quantum?quantum:16);return ret;}),};Module["Runtime"]=Runtime;function assert(condition,text){if(!condition){abort("Assertion failed: "+text);}}
 var ALLOC_STATIC=2;var ALLOC_NONE=4;function allocate(slab,types,allocator,ptr){var zeroinit,size;if(typeof slab==="number"){zeroinit=true;size=slab;}else{zeroinit=false;size=slab.length;}
