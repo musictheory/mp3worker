@@ -3,41 +3,31 @@
 <head>
 <script>
 
-function decode(arrayBuffer, audioBuffer, callback)
+function decode(arrayBuffer, audioContext, callback)
 {
     if (window.Worker) {
-        var left  = audioBuffer.getChannelData(0);
-        var right = audioBuffer.numberOfChannels > 1 ? audioBuffer.getChannelData(1) : null;
-
-        var offset = 0;
-        var w = new Worker("mp3worker.js");
+        var w = new Worker("mp3worker.min.js");
 
         w.onmessage = function(e) {
-            var data = e.data;
-            var type = data.type;
+            var data        = e.data;
+            var channelData = data.channelData;
+            var audioBuffer = null;
 
-            if (type == "error") {
-                callback(new Error("Couldn't decode"));
-
-            } else if (type == "frame") {
-                try {
-                    if (left)  left.set( data.left,  offset / 4);
-                    if (right) right.set(data.right, offset / 4);
-
-                    offset += data.sampleCount;
-                } catch (e) {
-                    callback(new Error("Error filling AudioBuffer"));
+            if (channelData && data.sampleRate) {
+                audioBuffer = audioContext.createBuffer(channelData.length, channelData[0].length, data.sampleRate);
+                
+                for (var i = 0; i < data.channelData.length; i++) {
+                    audioBuffer.getChannelData(i).set(data.channelData[i]);
                 }
-
-            } else if (type == "done") {
-                callback(null);
             }
+
+            callback(audioBuffer);
         };
 
         w.postMessage(arrayBuffer);
 
     } else {
-        callback(new Error("Web Workers are not available."));
+        callback(null);
     }
 }
 
@@ -48,19 +38,15 @@ function handleLoad()
 
     var request = new XMLHttpRequest();
     request.responseType = "arraybuffer";
-    request.open("GET", "test.mp3", true);
+    request.open("GET", "sounds/test.mp3", true);
 
     request.addEventListener("load", function(e) {
-        // audioBuffer needs to be large enough
-        var audioBuffer = context.createBuffer(2, 1024 * 1024, 44100);
-
-        decode(request.response, audioBuffer, function(err) {
-            if (!err) {
-                var source = context.createBufferSource();
-                source.buffer = audioBuffer;
-                source.connect(context.destination);
-                source.start();
-            }
+        decode(request.response, context, function(audioBuffer) {
+            console.log(audioBuffer);
+            var source = context.createBufferSource();
+            source.buffer = audioBuffer;
+            source.connect(context.destination);
+            source.start();
         });
     }, false);
 
